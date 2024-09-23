@@ -1,23 +1,20 @@
-import { useEffect } from 'react'
-import { getCategories } from './services/api'
-import './App.css'
+import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import NotFound from "./pages/NotFound";
+import Layout from "./pages/Layout";
+import Home from "./pages/Home";
+import ShoppingCart from "./pages/ShoppingCart";
 
 function App() {
-
-  useEffect(() => {
-    const getFetchCategories = async () => {
-      const data = await getCategories()
-      console.log("🚀 ~ getFetchCategories ~ data:", data)
-    }
-
-    getFetchCategories()
-  }, [])
-
   return (
-    <>
-      <h1>Aqui vai ser a Online Store</h1>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={ <Layout /> }>
+        <Route index element={<Home />} />
+        <Route path="/shopping-cart" element={ <ShoppingCart />}/>
+      </Route>
+      <Route path="/*" element={ <NotFound /> } />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
