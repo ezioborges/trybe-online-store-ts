@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import "../styles/home.css";
 import { useEffect, useState } from "react";
 import { getCategories, getProductsByQuery } from "../services/api";
 import { CategoriesType, ProcutsCardType } from "../types";
 import ProductCard from "../components/ProductCard";
+
+import "../styles/home.css";
 
 function Home() {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ function Home() {
         </div>
         <div className="w-100">
           <div className="row d-flex align-items-center p-4">
-            <div className="col d-flex justify-content-between">
+            <div className="col d-flex justify-content-around">
               <div className="d-flex w-75">
                 <input
                   type="text"
@@ -93,7 +94,7 @@ function Home() {
             {productsByQuery.length === 0 && !isLoad && !notFound && (
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>
             )}
-            <ul className="list-unstyled w-100 overflow-y-scroll" style={{ height: '85vh' }}>
+            <ul className="list-unstyled w-100 overflow-y-scroll products-list" style={{ height: '85vh' }}>
               {productsByQuery &&
                 productsByQuery.map((prod) => (
                   <li key={prod.id} className="mb-3">
