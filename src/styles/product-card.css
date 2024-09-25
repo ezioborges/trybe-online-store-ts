@@ -1,0 +1,13 @@
+.product-card {
+    width: 20%;
+    height: 15%;
+}
+
+img {
+    max-width: 30%;
+    height: auto;
+}
+
+p {
+    font-size: 0.8vw;
+}
