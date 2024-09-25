@@ -10,3 +10,10 @@ export type ProcutsCardType = {
   thumbnail?: string;
   price: number;
 };
+
+export type ProductDetailType = {
+  title: string;
+  price: number;
+  pictures: { url: string }[];
+  quantity: number;
+};

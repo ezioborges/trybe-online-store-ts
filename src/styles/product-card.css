@@ -7,6 +7,10 @@
     height: 300px;
 }
 
+.product-card:hover {
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
 img {
     max-width: 30%;
     height: auto;

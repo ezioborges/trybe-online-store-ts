@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getCategories,
@@ -21,7 +21,6 @@ function Home() {
   useEffect(() => {
     const getFetchCategories = async () => {
       const data = await getCategories();
-      console.log("🚀 ~ getFetchCategories ~ data:", data);
       setCategories(data);
     };
 
@@ -40,6 +39,10 @@ function Home() {
   const handleSearchProducts = async () => {
     setIsload(true);
     const searchedProducts = await getProductsByQuery(searchProduct);
+    console.log(
+      "🚀 ~ handleSearchProducts ~ searchedProducts:",
+      searchedProducts
+    );
 
     if (searchedProducts.length === 0) {
       setNotFound(true);
@@ -116,11 +119,13 @@ function Home() {
               {productsArray &&
                 productsArray.map((prod) => (
                   <li key={prod.id} className="mb-3">
-                    <ProductCard
-                      title={prod.title}
-                      img={prod.thumbnail}
-                      price={prod.price}
-                    />
+                    <Link to={`/product-details/${prod.id}`}>
+                      <ProductCard
+                        title={prod.title}
+                        img={prod.thumbnail}
+                        price={prod.price}
+                      />
+                    </Link>
                   </li>
                 ))}
               {notFound && (
