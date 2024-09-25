@@ -52,3 +52,20 @@ export const getProductsByQuery = async (query: string) => {
     console.error(error.message);
   }
 };
+
+export const getProductsByCategoryId = async (categoryId: string) => {
+  const url = `https://api.mercadolibre.com/sites/MLB/search?category=${categoryId}`;
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const json = await response.json();
+    return json.results;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error(error.message);
+  }
+};

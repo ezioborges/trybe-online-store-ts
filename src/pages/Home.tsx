@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getCategories, getProductsByQuery } from "../services/api";
+import {
+  getCategories,
+  getProductsByCategoryId,
+  getProductsByQuery,
+} from "../services/api";
 import { CategoriesType, ProcutsCardType } from "../types";
 import ProductCard from "../components/ProductCard";
 
@@ -10,13 +14,14 @@ function Home() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [searchProduct, setSearchProduct] = useState("");
-  const [productsByQuery, setProductsByQuery] = useState<ProcutsCardType[]>([]);
+  const [productsArray, setProductsArray] = useState<ProcutsCardType[]>([]);
   const [isLoad, setIsload] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const getFetchCategories = async () => {
       const data = await getCategories();
+      console.log("🚀 ~ getFetchCategories ~ data:", data);
       setCategories(data);
     };
 
@@ -40,12 +45,18 @@ function Home() {
       setNotFound(true);
     }
 
-    setProductsByQuery(searchedProducts || []);
+    setProductsArray(searchedProducts || []);
     setSearchProduct("");
     setIsload(false);
   };
 
+  const handleGetProductByCategoryId = async (categoryId: string) => {
+    setIsload(true);
+    const productsByCategory = await getProductsByCategoryId(categoryId);
 
+    setProductsArray(productsByCategory || []);
+    setIsload(false);
+  };
 
   if (isLoad) return <h1>Loading...</h1>;
 
@@ -58,7 +69,11 @@ function Home() {
         >
           <h2 className="text-center">Categorias</h2>
           {categories.map((categorie) => (
-            <button className="w-100 btn btn-light" key={categorie.id}>
+            <button
+              className="w-100 btn btn-light"
+              key={categorie.id}
+              onClick={() => handleGetProductByCategoryId(categorie.id)}
+            >
               {categorie.name}
             </button>
           ))}
@@ -91,12 +106,15 @@ function Home() {
             className="col d-flex flex-column align-items-center"
             style={{ padding: "20px" }}
           >
-            {productsByQuery.length === 0 && !isLoad && !notFound && (
+            {productsArray.length === 0 && !isLoad && !notFound && (
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>
             )}
-            <ul className="list-unstyled w-100 overflow-y-scroll products-list" style={{ height: '85vh' }}>
-              {productsByQuery &&
-                productsByQuery.map((prod) => (
+            <ul
+              className="list-unstyled w-100 overflow-y-scroll products-list"
+              style={{ height: "85vh" }}
+            >
+              {productsArray &&
+                productsArray.map((prod) => (
                   <li key={prod.id} className="mb-3">
                     <ProductCard
                       title={prod.title}
