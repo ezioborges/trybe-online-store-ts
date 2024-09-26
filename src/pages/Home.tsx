@@ -9,6 +9,7 @@ import { CategoriesType, ProcutsCardType } from "../types";
 import ProductCard from "../components/ProductCard";
 
 import "../styles/home.css";
+import { setProducts } from "../utils/localProducts";
 
 function Home() {
   const navigate = useNavigate();
@@ -39,10 +40,6 @@ function Home() {
   const handleSearchProducts = async () => {
     setIsload(true);
     const searchedProducts = await getProductsByQuery(searchProduct);
-    console.log(
-      "🚀 ~ handleSearchProducts ~ searchedProducts:",
-      searchedProducts
-    );
 
     if (searchedProducts.length === 0) {
       setNotFound(true);
@@ -59,6 +56,10 @@ function Home() {
 
     setProductsArray(productsByCategory || []);
     setIsload(false);
+  };
+
+  const addProductsInShoppingCart = (product: object) => {
+    return setProducts(product)
   };
 
   if (isLoad) return <h1>Loading...</h1>;
@@ -118,7 +119,10 @@ function Home() {
             >
               {productsArray &&
                 productsArray.map((prod) => (
-                  <li key={prod.id} className="mb-3">
+                  <li
+                    key={prod.id}
+                    className="d-flex flex-column align-items-center mb-3"
+                  >
                     <Link to={`/product-details/${prod.id}`}>
                       <ProductCard
                         title={prod.title}
@@ -126,6 +130,12 @@ function Home() {
                         price={prod.price}
                       />
                     </Link>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => addProductsInShoppingCart(prod)}
+                    >
+                      Adicionar ao Carrinho
+                    </button>
                   </li>
                 ))}
               {notFound && (
