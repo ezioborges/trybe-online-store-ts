@@ -9,7 +9,7 @@ import { CategoriesType, ProcutsCardType } from "../types";
 import ProductCard from "../components/ProductCard";
 
 import "../styles/home.css";
-import { setProducts } from "../utils/localProducts";
+import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
 
 function Home() {
   const navigate = useNavigate();
@@ -56,10 +56,6 @@ function Home() {
 
     setProductsArray(productsByCategory || []);
     setIsload(false);
-  };
-
-  const addProductsInShoppingCart = (product: object) => {
-    return setProducts(product)
   };
 
   if (isLoad) return <h1>Loading...</h1>;

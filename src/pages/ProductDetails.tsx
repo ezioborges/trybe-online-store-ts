@@ -4,6 +4,7 @@ import { getProductsById } from "../services/api";
 import { ProductDetailType } from "../types";
 
 import "../styles/product-details.css";
+import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
 
 function ProductDetails() {
   const location = useLocation();
@@ -40,7 +41,7 @@ function ProductDetails() {
 
   return (
     <div className="container-fluid">
-      <div className="d-flex justify-content-between m-3 p-4 details">
+      <div className="d-flex justify-content-between p-4 details">
         <button
           onClick={() => navigate("/")}
           className="btn btn-success btn-lg ms-5"
@@ -56,12 +57,12 @@ function ProductDetails() {
       </div>
       <div
         style={{ height: "80vh" }}
-        className="d-flex justify-content-center mt-5"
+        className="d-flex justify-content-center pt-4"
       >
         {!isLoad && (
           <div
             style={{ height: "70vh" }}
-            className="d-flex flex-column align-items-center justify-content-around mt-5 p-5 border rounded w-25 details"
+            className="d-flex flex-column align-items-center justify-content-around p-3 border rounded w-25 details"
           >
             <div className="d-flex flex-column align-items-center">
               <h3 className="text-center mb-3">{product.title}</h3>
@@ -73,6 +74,14 @@ function ProductDetails() {
                 alt={`Imagem do produto ${product.title}`}
               />
               <h3 className="text-center mt-3">R$ {productPrice}</h3>
+            </div>
+            <div>
+              <button
+                onClick={() => addProductsInShoppingCart(product)}
+                className="btn btn-danger"
+              >
+                Adicionar ao Carrinho
+              </button>
             </div>
           </div>
         )}
