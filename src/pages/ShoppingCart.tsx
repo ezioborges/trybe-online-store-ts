@@ -1,34 +1,25 @@
 import { useEffect, useState } from "react";
-import { getProducts } from "../utils/localProducts";
-
+import { addQuantity, decreaseQuantity, getProducts } from "../utils/localProducts"; // Certifica-te de que `setProducts` está a ser usado
 import { useNavigate } from "react-router-dom";
+import { ProductsType } from "../types";
 
 function ShoppingCart() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState<ProductShoppingCart[]>([]);
-
-  type ProductShoppingCart = {
-    id: string;
-    title: string;
-    thumbnail: string;
-    price: number;
-  };
+  const [products, setProductsState] = useState<ProductsType[]>([]);
 
   useEffect(() => {
     const data = getProducts();
-    setProducts(data);
-  }, []);
+    setProductsState(data); // Inicializa o estado com os produtos do localStorage
+  }, [products.map((e) => e.quantity)]);
 
   return (
     <div className="container-fluid d-flex justify-content-center">
-      <div
-        className="row w-75 "
-        style={{ height: "100vh" }}
-      >
-        <div
-          className="col-12 d-flex justify-content-center align-items-center"
-        >
-          <button className="btn btn-secondary p-3 fw-bold" onClick={() => navigate("/")}>
+      <div className="row w-75 " style={{ height: "100vh" }}>
+        <div className="col-12 d-flex justify-content-center align-items-center">
+          <button
+            className="btn btn-secondary p-3 fw-bold"
+            onClick={() => navigate("/")}
+          >
             Voltar para tela inicial
           </button>
         </div>
@@ -51,12 +42,15 @@ function ShoppingCart() {
                 <th className="py-4 text-center" scope="col">
                   Preço
                 </th>
+                <th className="py-4 text-center" scope="col">
+                  Quantidade
+                </th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
               {products && products.length > 0 ? (
                 products.map((prod, i) => (
-                  <tr key={prod.id}>
+                  <tr key={i}>
                     <td
                       className="text-center align-middle"
                       style={{ width: "3%", height: "15vh" }}
@@ -65,13 +59,13 @@ function ShoppingCart() {
                     </td>
                     <td
                       className="text-center align-middle"
-                      style={{ width: "32%", height: "15vh" }}
+                      style={{ width: "30%", height: "15vh" }}
                     >
                       <p>{prod.title}</p>
                     </td>
                     <td
                       className="text-center align-middle"
-                      style={{ width: "32%", height: "15vh" }}
+                      style={{ width: "30%", height: "15vh" }}
                     >
                       <img
                         src={prod.thumbnail}
@@ -82,7 +76,35 @@ function ShoppingCart() {
                       className="text-center align-middle"
                       style={{ width: "6%", height: "15vh" }}
                     >
-                      <p>R$ {prod.price.toFixed(2).replace(".", ",")}</p>
+                      <p>R$ {prod.price}</p>
+                    </td>
+                    <td
+                      className="text-center align-middle"
+                      style={{ width: "6%", height: "15vh" }}
+                    >
+                      <div className="d-flex">
+                        <button
+                          className="btn btn-secondary"
+                          style={{ width: "40px", height: "40px" }}
+                          onClick={() => decreaseQuantity(prod)}
+                        >
+                          -
+                        </button>
+                        <div
+                          style={{ width: "40px", height: "40px" }}
+                          className="border rounded d-flex  align-items-center justify-content-center"
+                        >
+                          {" "}
+                          <span className="text-center">{prod.quantity}</span>
+                        </div>
+                        <button
+                          className="btn btn-danger"
+                          style={{ width: "40px", height: "40px" }}
+                          onClick={() => addQuantity(prod)}
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

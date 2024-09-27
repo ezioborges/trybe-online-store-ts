@@ -5,7 +5,7 @@ import {
   getProductsByCategoryId,
   getProductsByQuery,
 } from "../services/api";
-import { CategoriesType, ProcutsCardType } from "../types";
+import { CategoriesType, ProductsType } from "../types";
 import ProductCard from "../components/ProductCard";
 
 import "../styles/home.css";
@@ -15,7 +15,7 @@ function Home() {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<CategoriesType[]>([]);
   const [searchProduct, setSearchProduct] = useState("");
-  const [productsArray, setProductsArray] = useState<ProcutsCardType[]>([]);
+  const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
   const [isLoad, setIsload] = useState(false);
   const [notFound, setNotFound] = useState(false);
 

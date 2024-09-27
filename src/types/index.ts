@@ -3,17 +3,11 @@ export type CategoriesType = {
   name: string;
 };
 
-export type ProcutsCardType = {
+export type ProductsType = {
   id?: string;
   title: string;
   img: string | undefined;
   thumbnail?: string;
   price: number;
-};
-
-export type ProductDetailType = {
-  title: string;
-  price: number;
-  pictures: { url: string }[];
   quantity: number;
 };
