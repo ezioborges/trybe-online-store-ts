@@ -1,3 +1,11 @@
 .details:hover {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+
+.rating-area {
+  cursor: pointer;
+  margin-right: 5px;
+  height: 30px;
+  width: 30px;
+  border-radius: 100%;
+}

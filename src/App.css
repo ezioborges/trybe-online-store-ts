@@ -5,4 +5,14 @@
   padding: 0;
 }
 
+.overflow-auto::-webkit-scrollbar {
+  width: 8px; /* Largura da barra de rolagem */
+}
+  .overflow-auto::-webkit-scrollbar-thumb {
+  background-color: #615b5b; /* Cor do "polegar" da barra de rolagem */
+  border-radius: 10px; /* Cantos arredondados */
+}
 
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Cor ao passar o mouse */
+}
