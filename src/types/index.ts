@@ -19,3 +19,9 @@ export type ProductDetailType = {
   pictures: { url: string }[];
   quantity: 0;
 };
+
+export type PostReviewType = {
+  email: string;
+  review: string;
+  rating: number;
+};

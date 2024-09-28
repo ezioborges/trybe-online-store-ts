@@ -64,8 +64,8 @@ function Home() {
     <div className="container-fluid">
       <div className="d-flex">
         <div
-          style={{ flex: "0 0 15%", height: "100vh" }}
-          className="overflow-y-scroll border-end"
+          className="overflow-y-scroll overflow-auto border-end"
+          style={{ flex: "0 0 15%", height: '100vh' }}
         >
           <h2 className="text-center">Categorias</h2>
           {categories.map((categorie) => (
@@ -78,8 +78,8 @@ function Home() {
             </button>
           ))}
         </div>
-        <div className="w-100">
-          <div className="row d-flex align-items-center p-4">
+        <div>
+          <div className="row d-flex align-items-center p-3">
             <div className="col d-flex justify-content-around">
               <div className="d-flex w-75">
                 <input
@@ -110,7 +110,7 @@ function Home() {
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>
             )}
             <ul
-              className="list-unstyled w-100 overflow-y-scroll products-list"
+              className="list-unstyled w-100 overflow-y-scroll overflow-auto products-list"
               style={{ height: "85vh" }}
             >
               {productsArray &&

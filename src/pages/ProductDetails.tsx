@@ -4,7 +4,8 @@ import { getProductsById } from "../services/api";
 
 import "../styles/product-details.css";
 import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
-import { ProductDetailType } from "../types";
+import { PostReviewType, ProductDetailType } from "../types";
+import RateBar from "../components/RateBar";
 
 function ProductDetails() {
   const location = useLocation();
@@ -17,7 +18,18 @@ function ProductDetails() {
     quantity: 0,
   });
   const [isLoad, setIsLoad] = useState(false);
-  const [rating, setRating] = useState(0);
+  const [postReview, setPostReview] = useState<PostReviewType>({
+    email: "",
+    review: "",
+    rating: 0,
+  });
+  const [reviewsArray, setReviewsArray] = useState<PostReviewType[]>([]);
+
+  const initialState = {
+    email: "",
+    review: "",
+    rating: 0,
+  };
 
   useEffect(() => {
     setIsLoad(true);
@@ -25,7 +37,6 @@ function ProductDetails() {
 
     const getInfosByLocation = async () => {
       const productDetails = await getProductsById(local);
-      console.log("🚀 ~ getInfosByLocation ~ productDetails:", productDetails);
       setProduct(productDetails);
       setIsLoad(false);
     };
@@ -34,10 +45,28 @@ function ProductDetails() {
   }, []);
 
   const handleRating = (value: number) => {
-    setRating(value);
+    setPostReview((prevState) => ({
+      ...prevState,
+      rating: value,
+    }));
   };
 
-  const arrayRating = [1, 2, 3, 4, 5];
+  const handleChange = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = target;
+
+    setPostReview((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleClickPost = () => {
+    const reviews = postReview;
+    setReviewsArray((prevArray) => [...prevArray, reviews]);
+    setPostReview(initialState);
+  };
 
   const productPrice = product.price.toFixed(2).replace(".", ",");
 
@@ -92,13 +121,10 @@ function ProductDetails() {
               </div>
             )}
           </div>
-          <div className="p-3 d-flex flex-column align-items-center" style={{ border: "1px solid black" }}>
+          <div className="p-3 d-flex flex-column align-items-center">
             <h3 className="mt-2">Quantidade</h3>
-            <div
-              className="d-flex flex-row align-items-between justify-content-between py-2"
-              style={{ border: "1px solid red"}}
-            >
-              <div className="d-flex flex-row justify-content-around align-items-center">
+            <div className="d-flex flex-row align-items-center justify-content-between w-25 p-2">
+              <div className="d-flex flex-row w-50 justify-content-start">
                 <button
                   className="btn btn-secondary"
                   style={{ width: "40px", height: "40px" }}
@@ -118,44 +144,67 @@ function ProductDetails() {
                   +
                 </button>
               </div>
-                <button className="btn btn-success" style={{ marginRight: '110px' }}>
+              <div>
+                <button className="btn btn-success">
                   Adicionar ao Carrinho
                 </button>
+              </div>
             </div>
           </div>
-          <div className="pt-3">
+          <div className="pt-3 d-flex flex-column align-items-center ">
             <h3>Avaliações</h3>
             <div className="d-flex flex-column">
               <div className="d-flex align-items-center p-2">
-                <input type="email" placeholder="Email..." />
+                <input
+                  type="email"
+                  placeholder="Email..."
+                  name="email"
+                  value={postReview.email}
+                  onChange={handleChange}
+                />
                 <div className="ps-4 d-flex">
-                  {arrayRating.map((rat) => (
-                    <div
-                      key={rat}
-                      className="rating-area ms-2"
-                      style={{
-                        backgroundColor: rat <= rating ? "gold" : "gray",
-                      }}
-                      onClick={() => handleRating(rat)}
-                    />
-                  ))}
+                    <div>
+                      <RateBar rating={postReview.rating} handleRating={handleRating} />
+                    </div>
                 </div>
               </div>
               <div>
                 <textarea
-                  className="w-25 m-2"
+                  className="w-100 m-1"
                   rows={5}
                   placeholder="Mensagem(opcional)"
+                  name="review"
+                  value={postReview.review}
+                  onChange={handleChange}
                 />
               </div>
-              <div>
-                <button className="btn btn-primary m-2">Avaliar</button>
+              <div className="d-flex justify-content-center">
+                <button
+                  className="btn btn-primary px-5 py-2 m-2"
+                  onClick={handleClickPost}
+                >
+                  Avaliar
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div className="col">
-          <h1>Aqui vai ficar os comentérios</h1>
+          <h1>Comentérios</h1>
+          <div>
+            {reviewsArray &&
+              reviewsArray.map((review, i) => (
+                <div key={i}>
+                  <div>
+                    <p>{review.email}</p>
+                    <RateBar rating={review.rating} />
+                  </div>
+                  <div>
+                    <p>{review.review}</p>
+                  </div>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>
