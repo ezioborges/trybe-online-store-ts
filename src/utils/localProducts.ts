@@ -12,7 +12,7 @@ export const setProducts = (product: object) => {
 
   const updatedProduct = {
     ...product,
-    quantity: 0,
+    quantity: 1,
   };
 
   localStorage.setItem(
