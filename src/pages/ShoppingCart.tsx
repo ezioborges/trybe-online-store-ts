@@ -10,6 +10,7 @@ import { ProductsType } from "../types";
 function ShoppingCart() {
   const navigate = useNavigate();
   const [products, setProductsState] = useState<ProductsType[]>([]);
+  console.log("🚀 ~ ShoppingCart ~ products:", products)
 
   useEffect(() => {
     const data = getProducts();

@@ -4,20 +4,28 @@ import { getProductsById } from "../services/api";
 
 import "../styles/product-details.css";
 import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
-import { PostReviewType, ProductDetailType } from "../types";
+import { PostReviewType, ProductsType } from "../types";
 import RateBar from "../components/RateBar";
 import ProductsTitleTooltip from "../components/Tooltip";
+import {
+  addQuantity,
+  decreaseQuantity,
+  getProducts,
+} from "../utils/localProducts";
 
 function ProductDetails() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState<ProductDetailType>({
+  const [product, setProduct] = useState<ProductsType>({
     title: "",
     price: 0,
     pictures: [],
     quantity: 0,
   });
+
+  console.log("🚀 ~ ProductDetails ~ product:", product);
+
   const [isLoad, setIsLoad] = useState(false);
   const [postReview, setPostReview] = useState<PostReviewType>({
     email: "",
@@ -38,12 +46,23 @@ function ProductDetails() {
 
     const getInfosByLocation = async () => {
       const productDetails = await getProductsById(local);
-      setProduct(productDetails);
+
+      const storedProducts = await getProducts();
+      const storedProduct = storedProducts.find(
+        (prod: ProductsType) => prod.id === productDetails.id
+      );
+
+      if (storedProduct) {
+        setProduct({
+          ...productDetails,
+          quantity: storedProduct.quantity,
+        });
+      }
       setIsLoad(false);
     };
 
     getInfosByLocation();
-  }, []);
+  }, [location.pathname]);
 
   const handleRating = (value: number) => {
     setPostReview((prevState) => ({
@@ -57,16 +76,47 @@ function ProductDetails() {
   }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = target;
 
-    setPostReview((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name === "quantity") {
+      const numberValue = parseInt(value, 10); // Converte para número
+      if (!isNaN(numberValue)) {
+        // Verifica se é um número válido
+        setProduct((prevState) => ({
+          ...prevState,
+          quantity: numberValue,
+        }));
+      }
+    } else {
+      setPostReview((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   const handleClickPost = () => {
     const reviews = postReview;
     setReviewsArray((prevArray) => [...prevArray, reviews]);
     setPostReview(initialState);
+  };
+
+  const handleIncrement = () => {
+    addQuantity(product);
+
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      quantity: prevProduct.quantity + 1,
+    }));
+  };
+
+  const handleDecrement = () => {
+    if (product.quantity > 0) {
+      decreaseQuantity(product);
+
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        quantity: Math.max(prevProduct.quantity - 1, 0),
+      }));
+    }
   };
 
   const productPrice = product.price.toFixed(2).replace(".", ",");
@@ -127,30 +177,29 @@ function ProductDetails() {
           </div>
           <div className="p-3 d-flex flex-column align-items-center">
             <h3 className="mt-2">Quantidade</h3>
-            <div className="d-flex flex-row align-items-center justify-content-between w-25 p-2">
-              <div className="d-flex flex-row w-50 justify-content-start">
+            <div className="d-flex flex-row align-items-center justify-content-center w-25 p-2">
+              <div className="d-flex flex-row w-50 justify-content-center">
                 <button
                   className="btn btn-secondary"
                   style={{ width: "40px", height: "40px" }}
+                  onClick={handleDecrement}
                 >
                   -
                 </button>
-                <div
-                  style={{ width: "40px", height: "40px" }}
-                  className="border rounded"
-                >
-                  <p className="text-center align-middle">0</p>
-                </div>
+
+                <input
+                  name="quantity"
+                  value={product.quantity}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-25 text-center"
+                />
                 <button
                   className="btn btn-danger"
                   style={{ width: "40px", height: "40px" }}
+                  onClick={handleIncrement}
                 >
                   +
-                </button>
-              </div>
-              <div>
-                <button className="btn btn-success">
-                  Adicionar ao Carrinho
                 </button>
               </div>
             </div>
@@ -203,14 +252,14 @@ function ProductDetails() {
                   key={i}
                   className="pt-3 d-flex flex-column justify-content-center align-items-start border mb-3 ps-3"
                 >
-                  <div
-                    className="d-flex align-items-center justify-content-between border-bottom"
-                  >
+                  <div className="d-flex align-items-center justify-content-between border-bottom">
                     <p className="m-0">{review.email}</p>
                     <RateBar rating={review.rating} />
                   </div>
                   <div className="pt-2">
-                    <p><strong>Comentário:</strong> {review.review}</p>
+                    <p>
+                      <strong>Comentário:</strong> {review.review}
+                    </p>
                   </div>
                 </div>
               ))}

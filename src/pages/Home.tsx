@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getCategories,
@@ -58,6 +58,11 @@ function Home() {
     setIsload(false);
   };
 
+  const handleProductClick = (prod: ProductsType) => {
+    addProductsInShoppingCart(prod)
+    navigate(`/product-details/${prod.id}`)
+  }
+
   if (isLoad) return <h1>Loading...</h1>;
 
   return (
@@ -65,7 +70,7 @@ function Home() {
       <div className="d-flex">
         <div
           className="overflow-y-scroll overflow-auto border-end"
-          style={{ flex: "0 0 15%", height: '100vh' }}
+          style={{ flex: "0 0 15%", height: "100vh" }}
         >
           <h2 className="text-center">Categorias</h2>
           {categories.map((categorie) => (
@@ -119,13 +124,16 @@ function Home() {
                     key={prod.id}
                     className="d-flex flex-column align-items-center mb-3"
                   >
-                    <Link to={`/product-details/${prod.id}`}>
+                    <div
+                      onClick={() => handleProductClick(prod)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <ProductCard
                         title={prod.title}
                         img={prod.thumbnail}
                         price={prod.price}
                       />
-                    </Link>
+                    </div>
                     <button
                       className="btn btn-primary"
                       onClick={() => addProductsInShoppingCart(prod)}
