@@ -6,6 +6,7 @@ import "../styles/product-details.css";
 import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
 import { PostReviewType, ProductDetailType } from "../types";
 import RateBar from "../components/RateBar";
+import ProductsTitleTooltip from "../components/Tooltip";
 
 function ProductDetails() {
   const location = useLocation();
@@ -80,7 +81,7 @@ function ProductDetails() {
       className="container-fluid overflow-y-scroll overflow-auto"
       style={{ height: "100vh" }}
     >
-      <div className="row d-flex">
+      <div className="d-flex">
         <div className="col-sm-8 col d-flex flex-column">
           <div className="d-flex justify-content-between p-2 details col">
             <button
@@ -100,8 +101,14 @@ function ProductDetails() {
             {!isLoad && (
               <div className="d-flex flex-column align-items-center justify-content-around p-3 border rounded w-25 details">
                 <div className="d-flex flex-column align-items-center">
-                  <h3 className="text-center mb-3">{product.title}</h3>
-
+                  <div
+                    className="overflow-hidden"
+                    style={{ height: "38px" }}
+                  >
+                    <ProductsTitleTooltip title={product.title} id="1">
+                      <h3 className="text-center mb-3">{product.title}</h3>
+                    </ProductsTitleTooltip>
+                  </div>
                   <img
                     className="img-fluid mx-auto"
                     style={{ maxWidth: "200px", maxHeight: "150px" }}
@@ -163,9 +170,10 @@ function ProductDetails() {
                   onChange={handleChange}
                 />
                 <div className="ps-4 d-flex">
-                    <div>
-                      <RateBar rating={postReview.rating} handleRating={handleRating} />
-                    </div>
+                  <RateBar
+                    rating={postReview.rating}
+                    handleRating={handleRating}
+                  />
                 </div>
               </div>
               <div>
@@ -189,7 +197,7 @@ function ProductDetails() {
             </div>
           </div>
         </div>
-        <div className="col">
+        <div className="col border d-flex justify-content-center">
           <h1>Comentérios</h1>
           <div>
             {reviewsArray &&

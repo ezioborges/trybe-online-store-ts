@@ -78,7 +78,7 @@ function Home() {
             </button>
           ))}
         </div>
-        <div>
+        <div className="w-100">
           <div className="row d-flex align-items-center p-3">
             <div className="col d-flex justify-content-around">
               <div className="d-flex w-75">
