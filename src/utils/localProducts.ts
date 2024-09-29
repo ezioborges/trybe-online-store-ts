@@ -39,14 +39,16 @@ export const addQuantity = (product: ProductsType) => {
 export const decreaseQuantity = (product: ProductsType) => {
   const products: ProductsType[] = getProducts();
 
-  const updateProducts = products.map((prod) => {
-    if (prod.id === product.id) {
-      return {
-        ...prod,
-        quantity: prod.quantity > 0 ? prod.quantity - 1 : 0,
-      };
-    }
-    return prod;
-  });
-  localStorage.setItem(PRODUCT_KEY, JSON.stringify(updateProducts))
+  const updateProducts = products
+    .map((prod) => {
+      if (prod.id === product.id) {
+        return {
+          ...prod,
+          quantity: prod.quantity > 0 ? prod.quantity - 1 : 0,
+        };
+      }
+      return prod;
+    })
+    .filter((prod) => prod.quantity >= 1);
+  localStorage.setItem(PRODUCT_KEY, JSON.stringify(updateProducts));
 };

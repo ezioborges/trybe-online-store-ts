@@ -109,7 +109,6 @@ function Home() {
           </div>
           <div
             className="col d-flex flex-column align-items-center"
-            style={{ padding: "20px" }}
           >
             {productsArray.length === 0 && !isLoad && !notFound && (
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>

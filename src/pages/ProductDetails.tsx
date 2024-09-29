@@ -24,8 +24,6 @@ function ProductDetails() {
     quantity: 0,
   });
 
-  console.log("🚀 ~ ProductDetails ~ product:", product);
-
   const [isLoad, setIsLoad] = useState(false);
   const [postReview, setPostReview] = useState<PostReviewType>({
     email: "",

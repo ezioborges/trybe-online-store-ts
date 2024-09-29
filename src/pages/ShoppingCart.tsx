@@ -3,14 +3,13 @@ import {
   addQuantity,
   decreaseQuantity,
   getProducts,
-} from "../utils/localProducts"; // Certifica-te de que `setProducts` está a ser usado
+} from "../utils/localProducts";
 import { useNavigate } from "react-router-dom";
 import { ProductsType } from "../types";
 
 function ShoppingCart() {
   const navigate = useNavigate();
   const [products, setProductsState] = useState<ProductsType[]>([]);
-  console.log("🚀 ~ ShoppingCart ~ products:", products)
 
   useEffect(() => {
     const data = getProducts();
@@ -28,32 +27,39 @@ function ShoppingCart() {
   };
 
   const handleDecreaseQuantity = (product: ProductsType) => {
-    if (product.quantity > 0) {
-      decreaseQuantity(product);
-  
-      setProductsState((prevProducts) => {
-        return prevProducts.map((prod) =>
+    setProductsState((prevProducts) => {
+      const updateProducts = prevProducts
+        .map((prod) =>
           prod.id === product.id
             ? { ...prod, quantity: Math.max(prod.quantity - 1, 0) }
             : prod
-        );
-      });
-    } 
+        )
+        .filter((prod) => prod.quantity > 0);
+
+      if (product.quantity > 0) {
+        decreaseQuantity(product);
+      }
+
+      return updateProducts;
+    });
   };
 
   return (
     <div className="container-fluid d-flex justify-content-center">
-      <div className="row w-75 " style={{ height: "100vh" }}>
-        <div className="col-12 d-flex justify-content-between align-items-center" style={{ padding: '0 100px 0 90px' }}>
+      <div className="row w-75" style={{ height: "100vh" }}>
+        <div
+          className="col-12 d-flex justify-content-between align-items-center"
+          style={{ padding: "0 100px 0 90px" }}
+        >
           <button
             className="btn btn-secondary p-3 fw-bold"
             onClick={() => navigate("/")}
           >
             Voltar para tela inicial
           </button>
-          <button
-            className="btn btn-success p-3 fw-bolder"
-          >Finalizar Compra</button>
+          <button className="btn btn-success p-3 fw-bolder">
+            Finalizar Compra
+          </button>
         </div>
         <div
           className="d-flex justify-content-center align-items-start overflow-y-scroll overflow-auto"
@@ -108,7 +114,7 @@ function ShoppingCart() {
                       className="text-center align-middle"
                       style={{ width: "6%", height: "15vh" }}
                     >
-                      <p>R$ {prod.price.toFixed(2).replace('.', ',')}</p>
+                      <p>R$ {prod.price.toFixed(2).replace(".", ",")}</p>
                     </td>
                     <td
                       className="text-center align-middle"
@@ -124,9 +130,8 @@ function ShoppingCart() {
                         </button>
                         <div
                           style={{ width: "40px", height: "40px" }}
-                          className="border rounded d-flex  align-items-center justify-content-center"
+                          className="border rounded d-flex align-items-center justify-content-center"
                         >
-                          {" "}
                           <span className="text-center">{prod.quantity}</span>
                         </div>
                         <button
