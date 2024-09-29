@@ -25,3 +25,8 @@ export type PostReviewType = {
   review: string;
   rating: number;
 };
+
+export type RateBarType = {
+  rating: number;
+  handleRating?: (value: number) => void;
+};

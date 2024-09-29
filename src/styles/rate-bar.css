@@ -1,0 +1,7 @@
+.rating-area {
+    cursor: pointer;
+    margin-right: 5px;
+    height: 15px;
+    width: 15px;
+    border-radius: 100%;
+  }

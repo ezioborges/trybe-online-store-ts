@@ -101,10 +101,7 @@ function ProductDetails() {
             {!isLoad && (
               <div className="d-flex flex-column align-items-center justify-content-around p-3 border rounded w-25 details">
                 <div className="d-flex flex-column align-items-center">
-                  <div
-                    className="overflow-hidden"
-                    style={{ height: "38px" }}
-                  >
+                  <div className="overflow-hidden" style={{ height: "38px" }}>
                     <ProductsTitleTooltip title={product.title} id="1">
                       <h3 className="text-center mb-3">{product.title}</h3>
                     </ProductsTitleTooltip>
@@ -198,17 +195,22 @@ function ProductDetails() {
           </div>
         </div>
         <div className="col border d-flex justify-content-center">
-          <h1>Comentérios</h1>
           <div>
+            <h1>Comentérios</h1>
             {reviewsArray &&
               reviewsArray.map((review, i) => (
-                <div key={i}>
-                  <div>
-                    <p>{review.email}</p>
+                <div
+                  key={i}
+                  className="pt-3 d-flex flex-column justify-content-center align-items-start border mb-3 ps-3"
+                >
+                  <div
+                    className="d-flex align-items-center justify-content-between border-bottom"
+                  >
+                    <p className="m-0">{review.email}</p>
                     <RateBar rating={review.rating} />
                   </div>
-                  <div>
-                    <p>{review.review}</p>
+                  <div className="pt-2">
+                    <p><strong>Comentário:</strong> {review.review}</p>
                   </div>
                 </div>
               ))}
