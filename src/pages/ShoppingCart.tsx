@@ -57,7 +57,10 @@ function ShoppingCart() {
           >
             Voltar para tela inicial
           </button>
-          <button className="btn btn-success p-3 fw-bolder">
+          <button
+            onClick={() => navigate("/shopping-summary")}
+            className="btn btn-success p-3 fw-bolder"
+          >
             Finalizar Compra
           </button>
         </div>
