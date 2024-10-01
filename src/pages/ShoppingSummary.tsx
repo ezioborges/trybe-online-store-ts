@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getProducts } from "../utils/localProducts";
 import { useNavigate } from "react-router-dom";
 import { ProductsType } from "../types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBarcode, faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 function ShoppingSummary() {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ function ShoppingSummary() {
   return (
     <>
       {!isLoad && (
-        <div
+        <form
           className="container-fluid overflow-y-scroll overflow-auto"
           style={{ height: "100vh" }}
         >
@@ -66,49 +68,163 @@ function ShoppingSummary() {
                 {productsTotalPrices?.toFixed(2).replace(".", ",")}
               </p>
             </div>
-            <div
-              className="col-4 my-1 w-100"
-              style={{ border: "1px solid red" }}
-            >
+            <div className="col-4 my-1 p-3 w-100">
               <h2>Informações do comprador</h2>
-              <form>
-                <div className="mb-3">
+              <div>
+                <div className="d-flex">
+                  <input
+                    type="text"
+                    name="name"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="Nome Completo"
+                  />
+                  <input
+                    type="text"
+                    name="cpf"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="CPF"
+                  />
                   <input
                     type="email"
-                    className="form-control"
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                    placeholder="Email..."
+                    // value={}
+                    name="email"
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="Email"
                   />
-                  <input type="text" />
-                  <input type="text" />
-                  <input type="text" />
-                </div>
-                <div className="mb-3 row">
                   <input
-                    type="password"
-                    className="form-control"
-                    id="exampleInputPassword1"
+                    type="text"
+                    name="phone"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="Telefone"
                   />
-                  <input type="text" />
                 </div>
-                <div>
-                  <input type="text" />
-                  <input type="text" />
-                  <input type="text" />
-                  <input type="text" />
+                <div className="d-flex">
+                  <input
+                    type="text"
+                    name="cep"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "38vw" }}
+                    placeholder="CEP"
+                  />
+                  <input
+                    type="text"
+                    name="adress"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "116vw" }}
+                    placeholder="Endereço"
+                  />
                 </div>
-                <button type="submit" className="btn btn-primary">
-                  Submit
-                </button>
-              </form>
+                <div className="d-flex">
+                  <input
+                    type="text"
+                    name="complemente"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="Complemento"
+                  />
+                  <input
+                    name="number"
+                    // value={}
+                    style={{ width: "20vw" }}
+                    className="form-control m-1"
+                    placeholder="Número"
+                  />
+                  <input
+                    type="text"
+                    name="city"
+                    style={{ width: "98vw" }}
+                    // value={}
+                    className="form-control m-1"
+                    placeholder="Cidade"
+                  />
+                  <input
+                    type="text"
+                    name="state"
+                    // value={}
+                    className="form-control m-1"
+                    style={{ width: "60vw" }}
+                    placeholder="Estado"
+                  />
+                </div>
+              </div>
             </div>
-            <div className="col-4">
-              <p>col 3</p>
+            <h2>Método de pagamento</h2>
+            <div className="col-4 w-100 d-flex flex-column align-items-start justify-content-center p-5 bg-light">
+              <div className="w-75 d-flex justify-content-around">
+                <div className="w-100 d-flex flex-column">
+                  <label htmlFor="ticket" className="form-label">
+                    Boleto
+                  </label>
+                  <div className="w-50 d-flex justify-content-around align-items-center">
+                    <input
+                      type="radio"
+                      name="ticket"
+                      className="form-check-input"
+                    />
+                    <span>
+                      <FontAwesomeIcon icon={faBarcode} size="6x" />
+                    </span>
+                  </div>
+                </div>
+                <div className="w-100 d-flex flex-column">
+                  <label htmlFor="credit" className="form-label">
+                    Crédito
+                  </label>
+                  <div className="w-50 d-flex justify-content-around align-items-center">
+                    <input
+                      type="radio"
+                      name="credit"
+                      className="form-check-input"
+                      placeholder="Disabled input"
+                    />
+                    <span>
+                      <FontAwesomeIcon
+                        icon={faCreditCard}
+                        className="text-primary"
+                        size="6x"
+                      />
+                    </span>
+                  </div>
+                </div>
+                <div className="w-100 d-flex flex-column">
+                  <label htmlFor="debit" className="form-label">
+                    Débito
+                  </label>
+                  <div className="w-50 d-flex justify-content-around align-items-center">
+                    <input
+                      id="debit"
+                      type="radio"
+                      name="debit"
+                      className="form-check-input"
+                    />
+                    <span>
+                      <FontAwesomeIcon
+                        icon={faCreditCard}
+                        className="text-success"
+                        size="6x"
+                      />
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <h1>resumo das compras</h1>
-        </div>
+          <div className="w-100 p-2 d-flex justify-content-center align-items-center">
+            <button type="submit" className="btn btn-primary btn-lg">
+              Submit
+            </button>
+          </div>
+        </form>
       )}
     </>
   );
