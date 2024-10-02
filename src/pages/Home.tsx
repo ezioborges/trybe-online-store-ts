@@ -13,6 +13,7 @@ import { getProducts, setProducts } from "../utils/localProducts";
 
 
 import "../styles/home.css";
+import { getQuantity } from "../utils/getQuantity";
 
 function Home() {
   const navigate = useNavigate();
@@ -21,17 +22,22 @@ function Home() {
   const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
   const [isLoad, setIsload] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  const [carQuantity, setCarQuantity] = useState<number | null>(null);
+  const [carQuantity, setCarQuantity] = useState<number>(0);
 
   useEffect(() => {
     const getFetchCategories = async () => {
       const data = await getCategories();
-      getQuantity();
       setCategories(data);
     };
 
+    const initializeCarQuantity = () => {
+      const quant = getQuantity() ?? 0;
+      setCarQuantity(quant)
+    }
+
     getFetchCategories();
-  }, [carQuantity]);
+    initializeCarQuantity();
+  }, []);
 
   const handleClick = () => {
     navigate("/shopping-cart");
@@ -68,28 +74,13 @@ function Home() {
     navigate(`/product-details/${prod.id}`);
   };
 
-  const getQuantity = () => {
-    setIsload(true);
-
-    const quantityShopping: ProductsType[] = getProducts();
-
-    if (quantityShopping.length > 0) {
-      const resultQuantities = quantityShopping.map((quant) => quant.quantity);
-      const quantity = resultQuantities.reduce(
-        (acc, quantity) => acc + quantity,
-        0
-      );
-      setCarQuantity(quantity);
-    }
-    setIsload(false);
-  };
-
   const addProductsInShoppingCart = (product: ProductsType) => {
     setIsload(true);
 
-    const products = getProducts();
+    const updateProducts: ProductsType[] = getProducts();
+    const totalQuantity = updateProducts.reduce((acc, prod) => acc + prod.quantity, 0)
 
-    setCarQuantity(products.length + 1);
+    setCarQuantity(totalQuantity + 1);
 
     setProducts(product);
 

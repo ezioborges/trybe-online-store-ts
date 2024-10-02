@@ -12,6 +12,8 @@ import {
   decreaseQuantity,
   getProducts,
 } from "../utils/localProducts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 function ProductDetails() {
   const location = useLocation();
@@ -31,6 +33,7 @@ function ProductDetails() {
     rating: 0,
   });
   const [reviewsArray, setReviewsArray] = useState<PostReviewType[]>([]);
+  const [carQuantity, setCarQuantity] = useState<number>(0);
 
   const initialState = {
     email: "",
@@ -59,7 +62,13 @@ function ProductDetails() {
       setIsLoad(false);
     };
 
+    const initializeCarQuantity = () => {
+      const quant = getProducts() ?? [];
+      setCarQuantity(quant.length);
+    };
+
     getInfosByLocation();
+    initializeCarQuantity();
   }, [location.pathname]);
 
   const handleRating = (value: number) => {
@@ -98,22 +107,38 @@ function ProductDetails() {
   };
 
   const handleIncrement = () => {
-    addQuantity(product);
-
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      quantity: prevProduct.quantity + 1,
-    }));
+    addQuantity(product); // Atualiza a quantidade localStorage
+  
+    // Atualiza a quantidade do produto local
+    setProduct((prevProduct) => {
+      const newQuantity = prevProduct.quantity + 1;
+  
+      // Atualiza a quantidade total do carrinho
+      setCarQuantity((prevCarQuantity) => prevCarQuantity + 1);
+  
+      return {
+        ...prevProduct,
+        quantity: newQuantity,
+      };
+    });
   };
 
   const handleDecrement = () => {
     if (product.quantity > 0) {
-      decreaseQuantity(product);
-
-      setProduct((prevProduct) => ({
-        ...prevProduct,
-        quantity: Math.max(prevProduct.quantity - 1, 0),
-      }));
+      decreaseQuantity(product); // Atualiza a quantidade localStorage
+  
+      // Atualiza a quantidade do produto local
+      setProduct((prevProduct) => {
+        const newQuantity = Math.max(prevProduct.quantity - 1, 0);
+  
+        // Atualiza a quantidade total do carrinho
+        setCarQuantity((prevCarQuantity) => prevCarQuantity - 1);
+  
+        return {
+          ...prevProduct,
+          quantity: newQuantity,
+        };
+      });
     }
   };
 
@@ -121,6 +146,7 @@ function ProductDetails() {
 
   const firstPicture =
     product.pictures.length > 0 ? product.pictures[0].url : "";
+
 
   if (isLoad) return <h1>Carregando...</h1>;
 
@@ -138,11 +164,14 @@ function ProductDetails() {
             >
               voltar
             </button>
+            <div>
+              <span>{carQuantity}</span>
+            </div>
             <button
               className="btn btn-primary btn-lg me-5"
               onClick={() => navigate("/shopping-cart")}
             >
-              carrinho de compras
+              <FontAwesomeIcon icon={faCartShopping} />
             </button>
           </div>
           <div className="d-flex justify-content-center pt-4 col">
