@@ -7,9 +7,12 @@ import {
 } from "../services/api";
 import { CategoriesType, ProductsType } from "../types";
 import ProductCard from "../components/ProductCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { getProducts, setProducts } from "../utils/localProducts";
+
 
 import "../styles/home.css";
-import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
 
 function Home() {
   const navigate = useNavigate();
@@ -18,15 +21,17 @@ function Home() {
   const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
   const [isLoad, setIsload] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [carQuantity, setCarQuantity] = useState<number | null>(null);
 
   useEffect(() => {
     const getFetchCategories = async () => {
       const data = await getCategories();
+      getQuantity();
       setCategories(data);
     };
 
     getFetchCategories();
-  }, []);
+  }, [carQuantity]);
 
   const handleClick = () => {
     navigate("/shopping-cart");
@@ -59,9 +64,37 @@ function Home() {
   };
 
   const handleProductClick = (prod: ProductsType) => {
-    addProductsInShoppingCart(prod)
-    navigate(`/product-details/${prod.id}`)
-  }
+    addProductsInShoppingCart(prod);
+    navigate(`/product-details/${prod.id}`);
+  };
+
+  const getQuantity = () => {
+    setIsload(true);
+
+    const quantityShopping: ProductsType[] = getProducts();
+
+    if (quantityShopping.length > 0) {
+      const resultQuantities = quantityShopping.map((quant) => quant.quantity);
+      const quantity = resultQuantities.reduce(
+        (acc, quantity) => acc + quantity,
+        0
+      );
+      setCarQuantity(quantity);
+    }
+    setIsload(false);
+  };
+
+  const addProductsInShoppingCart = (product: ProductsType) => {
+    setIsload(true);
+
+    const products = getProducts();
+
+    setCarQuantity(products.length + 1);
+
+    setProducts(product);
+
+    setIsload(false);
+  };
 
   if (isLoad) return <h1>Loading...</h1>;
 
@@ -84,32 +117,43 @@ function Home() {
           ))}
         </div>
         <div className="w-100">
-          <div className="row d-flex align-items-center p-3">
+          <div className="row d-flex align-items-center p-4">
             <div className="col d-flex justify-content-around">
               <div className="d-flex w-75">
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control h-50"
                   placeholder="Faça aqui sua pesquisa"
                   name="search"
                   value={searchProduct}
                   onChange={handleChange}
                 />
                 <button
-                  className="btn btn-success ms-2"
+                  className="btn btn-success ms-2 h-50"
                   onClick={handleSearchProducts}
                 >
                   Pesquisar
                 </button>
               </div>
-              <button className="btn btn-primary" onClick={handleClick}>
-                Carrinho de Compras
-              </button>
+              <div className="d-flex flex-column align-items-end w-25">
+                <div
+                  className="d-flex justify-content-center border bg-danger border-danger rounded-circle quantity-position"
+                  style={{ width: "1vw" }}
+                >
+                  <span className="text-white fw-bold">{carQuantity}</span>
+                </div>
+                <button
+                  className="btn btn-primary btn-lg"
+                  onClick={handleClick}
+                >
+                  <span>
+                    <FontAwesomeIcon icon={faCartShopping} />
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-          <div
-            className="col d-flex flex-column align-items-center"
-          >
+          <div className="col d-flex flex-column align-items-center">
             {productsArray.length === 0 && !isLoad && !notFound && (
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>
             )}
@@ -125,7 +169,7 @@ function Home() {
                   >
                     <div
                       onClick={() => handleProductClick(prod)}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     >
                       <ProductCard
                         title={prod.title}

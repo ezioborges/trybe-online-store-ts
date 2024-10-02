@@ -23,3 +23,16 @@ export type RateBarType = {
   rating: number;
   handleRating?: (value: number) => void;
 };
+
+export type AdressInfo = {
+  name: string;
+  cpf: string;
+  email: string;
+  phone: string;
+  cep: string;
+  adress: string;
+  complemente: string;
+  number: string;
+  city: string;
+  state: string;
+};

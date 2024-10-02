@@ -1,13 +1,27 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../utils/localProducts";
 import { useNavigate } from "react-router-dom";
-import { ProductsType } from "../types";
+import { AdressInfo, ProductsType } from "../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBarcode, faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 function ShoppingSummary() {
   const navigate = useNavigate();
   const [productsArray, setProductsArray] = useState<ProductsType[]>();
+  const [payment, setPayment] = useState<string | null>(null);
+
+  const [adressInfo, setAdressInfo] = useState<AdressInfo>({
+    name: "",
+    cpf: "",
+    email: "",
+    phone: "",
+    cep: "",
+    adress: "",
+    complemente: "",
+    number: "",
+    city: "",
+    state: "",
+  });
   const [isLoad, setIsLoad] = useState(false);
 
   useEffect(() => {
@@ -16,6 +30,25 @@ function ShoppingSummary() {
     setProductsArray(data);
     setIsLoad(false);
   }, []);
+
+  const handleChangeAdress = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = target;
+
+    setAdressInfo((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handlePaymentClick = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    const { name } = target;
+
+    setPayment((prev) => (prev === name ? null : name));
+  };
 
   const initialValue = 0;
   const productsPrices =
@@ -35,7 +68,9 @@ function ShoppingSummary() {
           style={{ height: "100vh" }}
         >
           <div className="row">
-            <button onClick={() => navigate("/")}>Voltar</button>
+            <button className="btn btn-success" onClick={() => navigate("/")}>
+              Voltar
+            </button>
           </div>
           <div className="row d-flex flex-column justify-content-center align-itmes-center">
             <div
@@ -75,85 +110,95 @@ function ShoppingSummary() {
                   <input
                     type="text"
                     name="name"
-                    // value={}
+                    value={adressInfo.name}
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="Nome Completo"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="text"
                     name="cpf"
-                    // value={}
+                    value={adressInfo.cpf}
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="CPF"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="email"
-                    // value={}
+                    value={adressInfo.email}
                     name="email"
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="Email"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="text"
                     name="phone"
-                    // value={}
+                    value={adressInfo.phone}
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="Telefone"
+                    onChange={handleChangeAdress}
                   />
                 </div>
                 <div className="d-flex">
                   <input
                     type="text"
                     name="cep"
-                    // value={}
+                    value={adressInfo.cep}
                     className="form-control m-1"
                     style={{ width: "38vw" }}
                     placeholder="CEP"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="text"
                     name="adress"
-                    // value={}
+                    value={adressInfo.adress}
                     className="form-control m-1"
                     style={{ width: "116vw" }}
                     placeholder="Endereço"
+                    onChange={handleChangeAdress}
                   />
                 </div>
                 <div className="d-flex">
                   <input
                     type="text"
                     name="complemente"
-                    // value={}
+                    value={adressInfo.complemente}
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="Complemento"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     name="number"
-                    // value={}
+                    value={adressInfo.number}
                     style={{ width: "20vw" }}
                     className="form-control m-1"
                     placeholder="Número"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="text"
                     name="city"
                     style={{ width: "98vw" }}
-                    // value={}
+                    value={adressInfo.city}
                     className="form-control m-1"
                     placeholder="Cidade"
+                    onChange={handleChangeAdress}
                   />
                   <input
                     type="text"
                     name="state"
-                    // value={}
+                    value={adressInfo.state}
                     className="form-control m-1"
                     style={{ width: "60vw" }}
                     placeholder="Estado"
+                    onChange={handleChangeAdress}
                   />
                 </div>
               </div>
@@ -170,6 +215,8 @@ function ShoppingSummary() {
                       type="radio"
                       name="ticket"
                       className="form-check-input"
+                      checked={payment === "ticket"}
+                      onChange={handlePaymentClick}
                     />
                     <span>
                       <FontAwesomeIcon icon={faBarcode} size="6x" />
@@ -186,6 +233,8 @@ function ShoppingSummary() {
                       name="credit"
                       className="form-check-input"
                       placeholder="Disabled input"
+                      checked={payment === "credit"}
+                      onChange={handlePaymentClick}
                     />
                     <span>
                       <FontAwesomeIcon
@@ -206,6 +255,8 @@ function ShoppingSummary() {
                       type="radio"
                       name="debit"
                       className="form-check-input"
+                      checked={payment === "debit"}
+                      onChange={handlePaymentClick}
                     />
                     <span>
                       <FontAwesomeIcon

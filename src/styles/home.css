@@ -8,3 +8,8 @@
     flex-wrap: wrap;
     justify-content: center;
 }
+
+.quantity-position {
+    position: relative;
+    top: 8px;
+}
