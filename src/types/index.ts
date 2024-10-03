@@ -1,3 +1,6 @@
+import { ThunkDispatch } from "redux-thunk";
+import { UnknownAction } from "redux";
+
 export type CategoriesType = {
   id: string;
   name: string;
@@ -36,3 +39,15 @@ export type AdressInfo = {
   city: string;
   state: string;
 };
+
+export type CategoriesStateType = {
+  categoriesReducer: CategoriesType[];
+};
+
+export type ProductsStateType = {
+  products: ProductsType[];
+};
+
+export type RootState = CategoriesStateType & ProductsStateType;
+
+export type Dispatch = ThunkDispatch<RootState, null, UnknownAction>;

@@ -2,22 +2,24 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getCategories,
-  getProductsByCategoryId,
   getProductsByQuery,
 } from "../services/api";
-import { CategoriesType, ProductsType } from "../types";
+import { Dispatch, ProductsType } from "../types";
 import ProductCard from "../components/ProductCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { getProducts, setProducts } from "../utils/localProducts";
 
-
 import "../styles/home.css";
 import { getQuantity } from "../utils/getQuantity";
+import { useDispatch } from "react-redux";
+import { actionResquestCategoriesSuccessful } from "../redux/actions";
+import Categories from "../components/Categories";
 
 function Home() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<CategoriesType[]>([]);
+  const dispatch: Dispatch = useDispatch();
+
   const [searchProduct, setSearchProduct] = useState("");
   const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
   const [isLoad, setIsload] = useState(false);
@@ -27,13 +29,13 @@ function Home() {
   useEffect(() => {
     const getFetchCategories = async () => {
       const data = await getCategories();
-      setCategories(data);
+      dispatch(actionResquestCategoriesSuccessful(data));
     };
 
     const initializeCarQuantity = () => {
       const quant = getQuantity() ?? 0;
-      setCarQuantity(quant)
-    }
+      setCarQuantity(quant);
+    };
 
     getFetchCategories();
     initializeCarQuantity();
@@ -61,13 +63,13 @@ function Home() {
     setIsload(false);
   };
 
-  const handleGetProductByCategoryId = async (categoryId: string) => {
-    setIsload(true);
-    const productsByCategory = await getProductsByCategoryId(categoryId);
+  // const handleGetProductByCategoryId = async (categoryId: string) => {
+  //   setIsload(true);
+  //   const productsByCategory = await getProductsByCategoryId(categoryId);
 
-    setProductsArray(productsByCategory || []);
-    setIsload(false);
-  };
+  //   dispatch(actionSetProductsByCategories(productsByCategory || []));
+  //   setIsload(false);
+  // };
 
   const handleProductClick = (prod: ProductsType) => {
     addProductsInShoppingCart(prod);
@@ -78,7 +80,10 @@ function Home() {
     setIsload(true);
 
     const updateProducts: ProductsType[] = getProducts();
-    const totalQuantity = updateProducts.reduce((acc, prod) => acc + prod.quantity, 0)
+    const totalQuantity = updateProducts.reduce(
+      (acc, prod) => acc + prod.quantity,
+      0
+    );
 
     setCarQuantity(totalQuantity + 1);
 
@@ -92,21 +97,7 @@ function Home() {
   return (
     <div className="container-fluid">
       <div className="d-flex">
-        <div
-          className="overflow-y-scroll overflow-auto border-end"
-          style={{ flex: "0 0 15%", height: "100vh" }}
-        >
-          <h2 className="text-center">Categorias</h2>
-          {categories.map((categorie) => (
-            <button
-              className="w-100 btn btn-light"
-              key={categorie.id}
-              onClick={() => handleGetProductByCategoryId(categorie.id)}
-            >
-              {categorie.name}
-            </button>
-          ))}
-        </div>
+        <Categories />
         <div className="w-100">
           <div className="row d-flex align-items-center p-4">
             <div className="col d-flex justify-content-around">
