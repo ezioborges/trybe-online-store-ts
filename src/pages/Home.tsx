@@ -1,10 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getCategories, getProductsByQuery } from "../services/api";
+import { getCategories } from "../services/api";
 import { Dispatch, ProductsType } from "../types";
 import ProductCard from "../components/ProductCard";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { getProducts, setProducts } from "../utils/localProducts";
 
 import "../styles/home.css";
@@ -12,6 +10,7 @@ import { getQuantity } from "../utils/getQuantity";
 import { useDispatch, useSelector } from "react-redux";
 import { actionResquestCategoriesSuccessful } from "../redux/actions";
 import Categories from "../components/Categories";
+import Header from "../components/Header";
 
 function Home() {
   const navigate = useNavigate();
@@ -21,12 +20,25 @@ function Home() {
     (state: { productsReducer: { products: ProductsType[] } }) =>
       state.productsReducer.products
   );
-  console.log("🚀 ~ Home ~ products:", products);
+  const search = useSelector(
+    (state: { productsReducer: { searchProduct: string } }) =>
+      state.productsReducer.searchProduct
+  );
+  console.log("🚀 ~ Home ~ search:", search);
 
-  const [searchProduct, setSearchProduct] = useState("");
-  const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
+  type ProductsReducerType = {
+    productsReducer: {
+      searchProducts: string;
+      isLoading: boolean;
+      products: ProductsType[]
+    };
+  };
+
+  const isLoading = useSelector((state: ProductsReducerType) => state.productsReducer.isLoading);
+  console.log("🚀 ~ Home ~ isLoading:", isLoading)
+
   const [isLoad, setIsload] = useState(false);
-  const [notFound, setNotFound] = useState(false);
+  // const [notFound, setNotFound] = useState(false);
   const [carQuantity, setCarQuantity] = useState<number>(0);
 
   useEffect(() => {
@@ -43,28 +55,6 @@ function Home() {
     getFetchCategories();
     initializeCarQuantity();
   }, []);
-
-  const handleClick = () => {
-    navigate("/shopping-cart");
-  };
-
-  const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = target;
-    setSearchProduct(value);
-  };
-
-  const handleSearchProducts = async () => {
-    setIsload(true);
-    const searchedProducts = await getProductsByQuery(searchProduct);
-
-    if (searchedProducts.length === 0) {
-      setNotFound(true);
-    }
-
-    setProductsArray(searchedProducts || []);
-    setSearchProduct("");
-    setIsload(false);
-  };
 
   const handleProductClick = (prod: ProductsType) => {
     addProductsInShoppingCart(prod);
@@ -87,51 +77,20 @@ function Home() {
     setIsload(false);
   };
 
-  if (isLoad) return <h1>Loading...</h1>;
+  if (isLoading) return <h1>é meu bom...</h1>;
 
   return (
     <div className="container-fluid">
       <div className="d-flex">
         <Categories />
         <div className="w-100">
+          {/* aqui vai ser onde eu vou colocar a quantidade de produtos que tem no carrinho */}
+          <span>{carQuantity}</span>
           <div className="row d-flex align-items-center p-4">
-            <div className="col d-flex justify-content-around">
-              <div className="d-flex w-75">
-                <input
-                  type="text"
-                  className="form-control h-50"
-                  placeholder="Faça aqui sua pesquisa"
-                  name="search"
-                  value={searchProduct}
-                  onChange={handleChange}
-                />
-                <button
-                  className="btn btn-success ms-2 h-50"
-                  onClick={handleSearchProducts}
-                >
-                  Pesquisar
-                </button>
-              </div>
-              <div className="d-flex flex-column align-items-end w-25">
-                <div
-                  className="d-flex justify-content-center border bg-danger border-danger rounded-circle quantity-position"
-                  style={{ width: "1vw" }}
-                >
-                  <span className="text-white fw-bold">{carQuantity}</span>
-                </div>
-                <button
-                  className="btn btn-primary btn-lg"
-                  onClick={handleClick}
-                >
-                  <span>
-                    <FontAwesomeIcon icon={faCartShopping} />
-                  </span>
-                </button>
-              </div>
-            </div>
+            <Header />
           </div>
           <div className="col d-flex flex-column align-items-center">
-            {productsArray.length === 0 && !isLoad && !notFound && (
+            {products.length === 0 && !isLoad && (
               <h2>Digite algum termo de pesquisa ou escolha uma categoria.</h2>
             )}
             <ul
@@ -162,11 +121,11 @@ function Home() {
                     </button>
                   </li>
                 ))}
-              {notFound && (
+              {/* {notFound && (
                 <div className="d-flex justify-content-center">
                   <h2>Nenhum produto encontrado</h2>
                 </div>
-              )}
+              )} */}
             </ul>
           </div>
         </div>
