@@ -10,7 +10,7 @@ type ProductAction = {
   payload: ProductsType[];
 };
 
-export const products = (state = INITIAL_STATE, action: ProductAction) => {
+export const productsReducer = (state = INITIAL_STATE, action: ProductAction) => {
   switch (action.type) {
     case SET_PRODUCTS:
       return {

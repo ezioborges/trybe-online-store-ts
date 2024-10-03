@@ -11,7 +11,6 @@ function Categories() {
     (state: { categoriesReducer: { categories: CategoriesStateType } }) =>
       state.categoriesReducer.categories
   );
-  console.log("🚀 ~ Categories ~ é aonde eu quero memo:", categories);
 
   const [isLoad, setIsLoad] = useState(false);
 

@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  getCategories,
-  getProductsByQuery,
-} from "../services/api";
+import { getCategories, getProductsByQuery } from "../services/api";
 import { Dispatch, ProductsType } from "../types";
 import ProductCard from "../components/ProductCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,13 +9,19 @@ import { getProducts, setProducts } from "../utils/localProducts";
 
 import "../styles/home.css";
 import { getQuantity } from "../utils/getQuantity";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actionResquestCategoriesSuccessful } from "../redux/actions";
 import Categories from "../components/Categories";
 
 function Home() {
   const navigate = useNavigate();
   const dispatch: Dispatch = useDispatch();
+
+  const products = useSelector(
+    (state: { productsReducer: { products: ProductsType[] } }) =>
+      state.productsReducer.products
+  );
+  console.log("🚀 ~ Home ~ products:", products);
 
   const [searchProduct, setSearchProduct] = useState("");
   const [productsArray, setProductsArray] = useState<ProductsType[]>([]);
@@ -62,14 +65,6 @@ function Home() {
     setSearchProduct("");
     setIsload(false);
   };
-
-  // const handleGetProductByCategoryId = async (categoryId: string) => {
-  //   setIsload(true);
-  //   const productsByCategory = await getProductsByCategoryId(categoryId);
-
-  //   dispatch(actionSetProductsByCategories(productsByCategory || []));
-  //   setIsload(false);
-  // };
 
   const handleProductClick = (prod: ProductsType) => {
     addProductsInShoppingCart(prod);
@@ -143,8 +138,8 @@ function Home() {
               className="list-unstyled w-100 overflow-y-scroll overflow-auto products-list"
               style={{ height: "85vh" }}
             >
-              {productsArray &&
-                productsArray.map((prod) => (
+              {Array.isArray(products) &&
+                products.map((prod) => (
                   <li
                     key={prod.id}
                     className="d-flex flex-column align-items-center mb-3"
