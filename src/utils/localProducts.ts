@@ -8,7 +8,7 @@ export const getProducts = () => {
 };
 
 export const setProducts = (product: object) => {
-  const products: object[] = getProducts();
+  const products: ProductsType[] = getProducts();
 
   const updatedProduct = {
     ...product,

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getProductsById } from "../services/api";
-
 import "../styles/product-details.css";
-import { addProductsInShoppingCart } from "../utils/addProductsInShoppingCart";
-import { PostReviewType, ProductsType } from "../types";
+import {
+  Dispatch,
+  PostReviewType,
+  ProductsReducerType,
+  ProductsType,
+} from "../types";
 import RateBar from "../components/RateBar";
 import ProductsTitleTooltip from "../components/Tooltip";
 import {
@@ -14,26 +17,34 @@ import {
 } from "../utils/localProducts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  actionProductDetails,
+  actionSetLoading,
+  actionUpdateQauntity,
+} from "../redux/actions";
 
 function ProductDetails() {
+  const dispatch: Dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState<ProductsType>({
-    title: "",
-    price: 0,
-    pictures: [],
-    quantity: 0,
-  });
+  const quantity = useSelector(
+    (state: ProductsReducerType) => state.productsReducer.productsQuantity
+  );
+  const product = useSelector(
+    (state: ProductsReducerType) => state.productsReducer.product
+  );
+  const loading = useSelector(
+    (state: ProductsReducerType) => state.productsReducer.isLoading
+  );
 
-  const [isLoad, setIsLoad] = useState(false);
   const [postReview, setPostReview] = useState<PostReviewType>({
     email: "",
     review: "",
     rating: 0,
   });
   const [reviewsArray, setReviewsArray] = useState<PostReviewType[]>([]);
-  const [carQuantity, setCarQuantity] = useState<number>(0);
 
   const initialState = {
     email: "",
@@ -42,34 +53,44 @@ function ProductDetails() {
   };
 
   useEffect(() => {
-    setIsLoad(true);
-    const local = location.pathname.slice(17);
+    const fetchData = async () => {
+      dispatch(actionSetLoading(true));
+      const local = location.pathname.slice(17);
 
-    const getInfosByLocation = async () => {
-      const productDetails = await getProductsById(local);
+      try {
+        const productDetails = await getProductsById(local);
+        const storedProducts = await getProducts();
+        const storedProduct = storedProducts.find(
+          (prod: ProductsType) => prod.id === productDetails.id
+        );
 
-      const storedProducts = await getProducts();
-      const storedProduct = storedProducts.find(
-        (prod: ProductsType) => prod.id === productDetails.id
-      );
+        // Se o produto já está no localStorage, defina a quantidade correta
+        const quantityInStorage = storedProduct ? storedProduct.quantity : 0;
 
-      if (storedProduct) {
-        setProduct({
-          ...productDetails,
-          quantity: storedProduct.quantity,
-        });
+        // Atualize o estado do produto com a quantidade correta
+        dispatch(
+          actionProductDetails({
+            ...productDetails,
+            quantity: quantityInStorage,
+          })
+        );
+      } catch (error) {
+        console.error("Erro ao carregar os dados do produto:", error);
+      } finally {
+        dispatch(actionSetLoading(false));
       }
-      setIsLoad(false);
     };
 
-    const initializeCarQuantity = () => {
-      const quant = getProducts() ?? [];
-      setCarQuantity(quant.length);
+    fetchData();
+    const initializeCarQuantity = async () => {
+      const storedProducts: ProductsType[] = await getProducts();
+      const totalQuantity = storedProducts.reduce((acc, products) => acc + products.quantity, 0);
+
+      dispatch(actionUpdateQauntity(totalQuantity))
     };
 
-    getInfosByLocation();
     initializeCarQuantity();
-  }, [location.pathname]);
+  }, [dispatch, location.pathname]);
 
   const handleRating = (value: number) => {
     setPostReview((prevState) => ({
@@ -84,13 +105,13 @@ function ProductDetails() {
     const { name, value } = target;
 
     if (name === "quantity") {
-      const numberValue = parseInt(value, 10); // Converte para número
+      const numberValue = parseInt(value, 10);
       if (!isNaN(numberValue)) {
-        // Verifica se é um número válido
-        setProduct((prevState) => ({
-          ...prevState,
+        const updateProduct = {
+          ...product,
           quantity: numberValue,
-        }));
+        };
+        dispatch(actionProductDetails(updateProduct));
       }
     } else {
       setPostReview((prevState) => ({
@@ -106,76 +127,79 @@ function ProductDetails() {
     setPostReview(initialState);
   };
 
-  const handleIncrement = () => {
-    addQuantity(product); // Atualiza a quantidade localStorage
-  
-    // Atualiza a quantidade do produto local
-    setProduct((prevProduct) => {
-      const newQuantity = prevProduct.quantity + 1;
-  
-      // Atualiza a quantidade total do carrinho
-      setCarQuantity((prevCarQuantity) => prevCarQuantity + 1);
-  
-      return {
-        ...prevProduct,
-        quantity: newQuantity,
-      };
-    });
+  const handleIncrement = async () => {
+    addQuantity(product);
+    const newQuantity = product.quantity + 1;
+    const currentCartShopping: ProductsType[] = await getProducts();
+    const totalQuantity = currentCartShopping.reduce(
+      (acc, prod) => acc + prod.quantity,
+      0
+    );
+
+    dispatch(actionProductDetails({ ...product, quantity: newQuantity }));
+    dispatch(actionUpdateQauntity(totalQuantity));
   };
 
-  const handleDecrement = () => {
+  const handleDecrement = async () => {
     if (product.quantity > 0) {
-      decreaseQuantity(product); // Atualiza a quantidade localStorage
-  
-      // Atualiza a quantidade do produto local
-      setProduct((prevProduct) => {
-        const newQuantity = Math.max(prevProduct.quantity - 1, 0);
-  
-        // Atualiza a quantidade total do carrinho
-        setCarQuantity((prevCarQuantity) => prevCarQuantity - 1);
-  
-        return {
-          ...prevProduct,
-          quantity: newQuantity,
-        };
-      });
+      decreaseQuantity(product);
+      const newQuantity = Math.max(product.quantity - 1, 0);
+      const currentCarShopping: ProductsType[] = await getProducts();
+      const totalQuantity = currentCarShopping.reduce(
+        (acc, products) => acc + products.quantity,
+        0
+      );
+
+      dispatch(actionProductDetails({ ...product, quantity: newQuantity }));
+      dispatch(actionUpdateQauntity(totalQuantity));
     }
   };
 
-  const productPrice = product.price.toFixed(2).replace(".", ",");
+  // Variáveis para armazenar os valores formatados
+  let formattedImg = "";
+  let formattedPrice = "";
 
-  const firstPicture =
-    product.pictures.length > 0 ? product.pictures[0].url : "";
+  if (product) {
+    // Verifica se a imagem existe, caso contrário, volta uma string vazia
+    formattedImg = product.pictures ? product.pictures[0].url : "";
 
+    // Formata o preço com duas casas decimais
+    formattedPrice = product.price
+      ? product.price.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "";
+  }
 
-  if (isLoad) return <h1>Carregando...</h1>;
+  if (loading) <h1>Carregando...</h1>;
 
   return (
     <div
       className="container-fluid overflow-y-scroll overflow-auto"
       style={{ height: "100vh" }}
     >
-      <div className="d-flex">
-        <div className="col-sm-8 col d-flex flex-column">
-          <div className="d-flex justify-content-between p-2 details col">
-            <button
-              onClick={() => navigate("/")}
-              className="btn btn-success btn-lg ms-5"
-            >
-              voltar
-            </button>
-            <div>
-              <span>{carQuantity}</span>
+      {!loading && (
+        <div className="d-flex">
+          <div className="col-sm-8 col d-flex flex-column">
+            <div className="d-flex justify-content-between p-2 details col">
+              <button
+                onClick={() => navigate("/")}
+                className="btn btn-success btn-lg ms-5"
+              >
+                voltar
+              </button>
+              <div>
+                <span>{quantity}</span>
+              </div>
+              <button
+                className="btn btn-primary btn-lg me-5"
+                onClick={() => navigate("/shopping-cart")}
+              >
+                <FontAwesomeIcon icon={faCartShopping} />
+              </button>
             </div>
-            <button
-              className="btn btn-primary btn-lg me-5"
-              onClick={() => navigate("/shopping-cart")}
-            >
-              <FontAwesomeIcon icon={faCartShopping} />
-            </button>
-          </div>
-          <div className="d-flex justify-content-center pt-4 col">
-            {!isLoad && (
+            <div className="d-flex justify-content-center pt-4 col">
               <div className="d-flex flex-column align-items-center justify-content-around p-3 border rounded w-25 details">
                 <div className="d-flex flex-column align-items-center">
                   <div className="overflow-hidden" style={{ height: "38px" }}>
@@ -186,113 +210,101 @@ function ProductDetails() {
                   <img
                     className="img-fluid mx-auto"
                     style={{ maxWidth: "200px", maxHeight: "150px" }}
-                    src={firstPicture}
+                    src={formattedImg}
                     alt={`Imagem do produto ${product.title}`}
                   />
-                  <h3 className="text-center mt-3">R$ {productPrice}</h3>
+                  <h3 className="text-center mt-3">R$ {formattedPrice}</h3>
                 </div>
-                <div>
+              </div>
+            </div>
+            <div className="p-3 d-flex flex-column align-items-center">
+              <h3 className="mt-2">Quantidade</h3>
+              <div className="d-flex flex-row align-items-center justify-content-center w-25 p-2">
+                <div className="d-flex flex-row w-50 justify-content-center">
                   <button
-                    onClick={() => addProductsInShoppingCart(product)}
-                    className="btn btn-danger"
+                    className="btn btn-secondary"
+                    style={{ width: "40px", height: "40px" }}
+                    onClick={handleDecrement}
                   >
-                    Adicionar ao Carrinho
+                    -
+                  </button>
+                  <input
+                    name="quantity"
+                    value={product.quantity}
+                    onChange={handleChange}
+                    min="0"
+                    className="w-25 text-center"
+                  />
+                  <button
+                    className="btn btn-danger"
+                    style={{ width: "40px", height: "40px" }}
+                    onClick={handleIncrement}
+                  >
+                    +
                   </button>
                 </div>
               </div>
-            )}
-          </div>
-          <div className="p-3 d-flex flex-column align-items-center">
-            <h3 className="mt-2">Quantidade</h3>
-            <div className="d-flex flex-row align-items-center justify-content-center w-25 p-2">
-              <div className="d-flex flex-row w-50 justify-content-center">
-                <button
-                  className="btn btn-secondary"
-                  style={{ width: "40px", height: "40px" }}
-                  onClick={handleDecrement}
-                >
-                  -
-                </button>
-
-                <input
-                  name="quantity"
-                  value={product.quantity}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-25 text-center"
-                />
-                <button
-                  className="btn btn-danger"
-                  style={{ width: "40px", height: "40px" }}
-                  onClick={handleIncrement}
-                >
-                  +
-                </button>
-              </div>
             </div>
-          </div>
-          <div className="pt-3 d-flex flex-column align-items-center ">
-            <h3>Avaliações</h3>
-            <div className="d-flex flex-column">
-              <div className="d-flex align-items-center p-2">
-                <input
-                  type="email"
-                  placeholder="Email..."
-                  name="email"
-                  value={postReview.email}
-                  onChange={handleChange}
-                />
-                <div className="ps-4 d-flex">
-                  <RateBar
-                    rating={postReview.rating}
-                    handleRating={handleRating}
+            <div className="pt-3 d-flex flex-column align-items-center ">
+              <h3>Avaliações</h3>
+              <div className="d-flex flex-column">
+                <div className="d-flex align-items-center p-2">
+                  <input
+                    type="email"
+                    placeholder="Email..."
+                    name="email"
+                    value={postReview.email}
+                    onChange={handleChange}
+                  />
+                  <div className="ps-4 d-flex">
+                    <RateBar
+                      rating={postReview.rating}
+                      handleRating={handleRating}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <textarea
+                    className="w-100 m-1"
+                    rows={5}
+                    placeholder="Mensagem(opcional)"
+                    name="review"
+                    value={postReview.review}
+                    onChange={handleChange}
                   />
                 </div>
-              </div>
-              <div>
-                <textarea
-                  className="w-100 m-1"
-                  rows={5}
-                  placeholder="Mensagem(opcional)"
-                  name="review"
-                  value={postReview.review}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="d-flex justify-content-center">
-                <button
-                  className="btn btn-primary px-5 py-2 m-2"
-                  onClick={handleClickPost}
-                >
-                  Avaliar
-                </button>
+                <div className="d-flex justify-content-center">
+                  <button
+                    className="btn btn-primary px-5 py-2 m-2"
+                    onClick={handleClickPost}
+                  >
+                    Avaliar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="col border d-flex justify-content-center">
-          <div>
-            <h1>Comentérios</h1>
-            {reviewsArray &&
-              reviewsArray.map((review, i) => (
-                <div
-                  key={i}
-                  className="pt-3 d-flex flex-column justify-content-center align-items-start border mb-3 ps-3"
-                >
-                  <div className="d-flex align-items-center justify-content-between border-bottom">
-                    <p className="m-0">{review.email}</p>
-                    <RateBar rating={review.rating} />
+          <div className="col border d-flex justify-content-center">
+            <div>
+              <h1>Comentérios</h1>
+              {reviewsArray &&
+                reviewsArray.map((review, i) => (
+                  <div
+                    key={i}
+                    className="pt-3 d-flex flex-column align-items-start border-bottom"
+                  >
+                    <h4>{review.email}</h4>
+                    <RateBar
+                      rating={review.rating}
+                      handleRating={handleRating}
+                    />
+                    <p>{review.review}</p>
                   </div>
-                  <div className="pt-2">
-                    <p>
-                      <strong>Comentário:</strong> {review.review}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

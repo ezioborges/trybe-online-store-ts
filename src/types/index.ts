@@ -40,6 +40,16 @@ export type AdressInfo = {
   state: string;
 };
 
+export type ProductsReducerType = {
+  productsReducer: {
+    searchProducts: string;
+    isLoading: boolean;
+    products: ProductsType[];
+    productsQuantity: number;
+    product: ProductsType
+  };
+};
+
 export type CategoriesStateType = {
   categoriesReducer: CategoriesType[];
 };

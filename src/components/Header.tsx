@@ -45,14 +45,14 @@ function Header() {
       <div className="d-flex w-75">
         <input
           type="text"
-          className="form-control h-50"
+          className="form-control"
           placeholder="Faça aqui sua pesquisa"
           name="search"
           value={searchProduct}
           onChange={handleChange}
         />
         <button
-          className="btn btn-success ms-2 h-50"
+          className="btn btn-success ms-2"
           onClick={handleSearchProducts}
         >
           Pesquisar

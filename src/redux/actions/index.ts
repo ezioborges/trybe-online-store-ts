@@ -10,6 +10,8 @@ export const REQUEST_CATEGORIES_FAILED = "REQUEST_CATEGORIES_FAILED";
 export const GET_PRODUCTS_BY_SEARCH = "GET_PRODUCTS_BY_SEARCH";
 export const SET_PRODUCTS_BY_SEARCH = "SET_PRODUCTS_BY_SEARCH";
 export const START_LOADING = "START_LOADING";
+export const UPDATE_QUANTITY = "UPDATE_QUANTITY";
+export const SET_PRODUCT_DETAIL = "SET_PRODUCT_DETAIL";
 
 export const actionSetCategories = (categories: CategoriesType[]) => ({
   type: SET_CATEGOIRES,
@@ -47,8 +49,19 @@ export const actionSetProductsBySearch = (products: ProductsType[]) => ({
   payload: products,
 });
 
-export const actionSetLoading = () => ({
+export const actionSetLoading = (bool: boolean) => ({
   type: START_LOADING,
+  payload: bool,
+});
+
+export const actionUpdateQauntity = (quantity: number) => ({
+  type: UPDATE_QUANTITY,
+  payload: quantity,
+});
+
+export const actionProductDetails = (product: ProductsType) => ({
+  type: SET_PRODUCT_DETAIL,
+  payload: product,
 });
 
 export const fetchCategories = () => {

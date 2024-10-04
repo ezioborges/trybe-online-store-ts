@@ -10,6 +10,9 @@
 }
 
 .quantity-position {
+    height: 30px;
+    width: 30px;
     position: relative;
-    top: 8px;
+    top: 15px;
+    right: 15px;
 }
