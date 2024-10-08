@@ -1,12 +1,29 @@
 import { useEffect, useState } from "react";
 import { getProducts } from "../utils/localProducts";
 import { useNavigate } from "react-router-dom";
-import { AdressInfo, ProductsType } from "../types";
+import {
+  AdressInfo,
+  Dispatch,
+  ProductsReducerType,
+  ProductsType,
+} from "../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBarcode, faCreditCard } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  actionPayment,
+  actionPurchaseCompleted,
+  actionSetLoading,
+} from "../redux/actions";
 
 function ShoppingSummary() {
   const navigate = useNavigate();
+  const dispatch: Dispatch = useDispatch();
+
+  const loading = useSelector(
+    (state: ProductsReducerType) => state.productsReducer.isLoading
+  );
+
   const [productsArray, setProductsArray] = useState<ProductsType[]>();
   const [payment, setPayment] = useState<string | null>(null);
 
@@ -22,13 +39,12 @@ function ShoppingSummary() {
     city: "",
     state: "",
   });
-  const [isLoad, setIsLoad] = useState(false);
 
   useEffect(() => {
-    setIsLoad(true);
+    dispatch(actionSetLoading(true));
     const data = getProducts();
     setProductsArray(data);
-    setIsLoad(false);
+    dispatch(actionSetLoading(false));
   }, []);
 
   const handleChangeAdress = ({
@@ -40,6 +56,13 @@ function ShoppingSummary() {
       ...prevState,
       [name]: value,
     }));
+
+    dispatch(
+      actionPurchaseCompleted({
+        ...adressInfo,
+        [name]: value,
+      })
+    );
   };
 
   const handlePaymentClick = ({
@@ -47,7 +70,11 @@ function ShoppingSummary() {
   }: React.ChangeEvent<HTMLInputElement>) => {
     const { name } = target;
 
-    setPayment((prev) => (prev === name ? null : name));
+    setPayment((prev) => {
+      const newPayment = prev === name ? null : name;
+      dispatch(actionPayment(newPayment));
+      return newPayment;
+    });
   };
 
   const initialValue = 0;
@@ -58,11 +85,11 @@ function ShoppingSummary() {
     initialValue
   );
 
-  if (isLoad) return <h1>Loading...</h1>;
+  if (loading) return <h1>Loading...</h1>;
 
   return (
     <>
-      {!isLoad && (
+      {!loading && (
         <form
           className="container-fluid overflow-y-scroll overflow-auto"
           style={{ height: "100vh" }}
@@ -271,7 +298,10 @@ function ShoppingSummary() {
             </div>
           </div>
           <div className="w-100 p-2 d-flex justify-content-center align-items-center">
-            <button onClick={() => navigate('/purchase-completed')} className="btn btn-primary btn-lg">
+            <button
+              onClick={() => navigate("/purchase-completed")}
+              className="btn btn-primary btn-lg"
+            >
               Submit
             </button>
           </div>

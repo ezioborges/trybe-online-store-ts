@@ -12,7 +12,6 @@ function ProductsList() {
   const products = useSelector(
     (state: ProductsReducerType) => state.productsReducer.products
   );
-  console.log("🚀 ~ ProductsList ~ products:", products);
   const loading = useSelector(
     (state: ProductsReducerType) => state.productsReducer.isLoading
   );

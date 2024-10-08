@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getCategories } from "../../services/api";
-import { CategoriesType, Dispatch, ProductsType } from "../../types";
+import {
+  AdressInfo,
+  CategoriesType,
+  Dispatch,
+  ProductsType,
+} from "../../types";
 
 export const SET_CATEGOIRES = "SET_CATEGOIRES";
 export const SET_PRODUCTS_BY_CATEGORIES = "SET_PRODUCTS_BY_CATEGORIES";
@@ -12,6 +17,8 @@ export const SET_PRODUCTS_BY_SEARCH = "SET_PRODUCTS_BY_SEARCH";
 export const START_LOADING = "START_LOADING";
 export const UPDATE_QUANTITY = "UPDATE_QUANTITY";
 export const SET_PRODUCT_DETAIL = "SET_PRODUCT_DETAIL";
+export const SET_ADRESS_INFO = "SET_ADRESS_INFO";
+export const SET_PAYMENT = "SET_PAYMENT";
 
 export const actionSetCategories = (categories: CategoriesType[]) => ({
   type: SET_CATEGOIRES,
@@ -62,6 +69,16 @@ export const actionUpdateQauntity = (quantity: number) => ({
 export const actionProductDetails = (product: ProductsType) => ({
   type: SET_PRODUCT_DETAIL,
   payload: product,
+});
+
+export const actionPurchaseCompleted = (adressInfo: AdressInfo) => ({
+  type: SET_ADRESS_INFO,
+  payload: adressInfo,
+});
+
+export const actionPayment = (payment: string | null) => ({
+  type: SET_PAYMENT,
+  payload: payment,
 });
 
 export const fetchCategories = () => {

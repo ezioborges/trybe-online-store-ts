@@ -18,7 +18,6 @@ function Header() {
     (state: { productsReducer: { searchProduct: string } }) =>
       state.productsReducer.searchProduct
   );
-  console.log("🚀 ~ Header ~ searchProduct:", searchProduct);
 
   const handleChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = target;
