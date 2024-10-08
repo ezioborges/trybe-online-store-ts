@@ -271,7 +271,7 @@ function ShoppingSummary() {
             </div>
           </div>
           <div className="w-100 p-2 d-flex justify-content-center align-items-center">
-            <button type="submit" className="btn btn-primary btn-lg">
+            <button onClick={() => navigate('/purchase-completed')} className="btn btn-primary btn-lg">
               Submit
             </button>
           </div>

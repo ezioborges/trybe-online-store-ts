@@ -53,12 +53,8 @@ function Home() {
               <span>{productsQuantity}</span>
             </div>
           </div>
-          <div className="row d-flex align-items-center px-4 pb-4">
             <Header />
-          </div>
-          <div>
             <ProductsList />
-          </div>
         </div>
       </div>
     </div>

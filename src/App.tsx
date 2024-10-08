@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ShoppingCart from "./pages/ShoppingCart";
 import ProductDetails from "./pages/ProductDetails";
 import ShoppingSummary from "./pages/ShoppingSummary";
+import PurchaseCompleted from "./pages/PurchaseCompleted";
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Route index element={<Home />} />
         <Route path='/product-details/:id' element={ <ProductDetails /> }/>
         <Route path="/shopping-cart" element={<ShoppingCart />} />
-        <Route path="/shopping-summary" element={ <ShoppingSummary /> } />
+        <Route path="/shopping-summary" element={<ShoppingSummary />} />
+        <Route path="/purchase-completed" element={ <PurchaseCompleted /> } />
       </Route>
       <Route path="/*" element={ <NotFound /> } />
     </Routes>

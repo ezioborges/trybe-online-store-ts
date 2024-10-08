@@ -26,7 +26,7 @@ function Header() {
   };
 
   const handleSearchProducts = async () => {
-    dispatch(actionSetLoading());
+    dispatch(actionSetLoading(true));
     const searchedProducts = await getProductsByQuery(searchProduct);
 
     // if (searchedProducts.length === 0) {
@@ -41,29 +41,31 @@ function Header() {
   };
 
   return (
-    <div className="col d-flex justify-content-around">
-      <div className="d-flex w-75">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Faça aqui sua pesquisa"
-          name="search"
-          value={searchProduct}
-          onChange={handleChange}
-        />
-        <button
-          className="btn btn-success ms-2"
-          onClick={handleSearchProducts}
-        >
-          Pesquisar
-        </button>
-      </div>
-      <div className="d-flex flex-column align-items-end w-25">
-        <button className="btn btn-primary btn-lg" onClick={handleClick}>
-          <span>
-            <FontAwesomeIcon icon={faCartShopping} />
-          </span>
-        </button>
+    <div className="row d-flex align-items-center px-4 pb-4">
+      <div className="col d-flex justify-content-around">
+        <div className="d-flex w-75">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Faça aqui sua pesquisa"
+            name="search"
+            value={searchProduct}
+            onChange={handleChange}
+          />
+          <button
+            className="btn btn-success ms-2"
+            onClick={handleSearchProducts}
+          >
+            Pesquisar
+          </button>
+        </div>
+        <div className="d-flex flex-column align-items-end w-25">
+          <button className="btn btn-primary btn-lg" onClick={handleClick}>
+            <span>
+              <FontAwesomeIcon icon={faCartShopping} />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
